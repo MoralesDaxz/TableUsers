@@ -82,7 +82,7 @@ const TableUsers = ({ datos }: Props) => {
     const [userFiltered, setUserFiltered] = useState<Result[]>([])
     const [modal, setModal] = useState<boolean>(false)
 
-    useEffect(()=>{table.setPageSize(5)},[table])
+    useEffect(() => { table.setPageSize(5) }, [table])
 
     const findUser = (userID: string | undefined) => {
         const filterUser = datos.filter(value => value.login?.uuid === userID)
@@ -102,7 +102,7 @@ const TableUsers = ({ datos }: Props) => {
                     /* Valor inicial 5 */
                     value={table.getState().pagination.pageSize}
                     onChange={(e) => { table.setPageSize(Number(e.target.value)) }}>
-                    
+
 
                     {[5, 10, 20, 30, 50].map((pageSize) => (
                         <option key={pageSize} value={pageSize}>{pageSize}</option>
@@ -117,6 +117,8 @@ const TableUsers = ({ datos }: Props) => {
                                 /* Control sort */
                                 const isSortable = header.column.getCanSort();
                                 const sort = header.column.getIsSorted();
+                                console.log(header.column);
+
                                 return (
                                     <th
                                         key={header.id}
@@ -138,11 +140,10 @@ const TableUsers = ({ datos }: Props) => {
                                                 )}
                                         </div>
                                         {/* Filter */}
-                                        {header.column.getCanFilter() ? (
-                                            <div>
+                                        {['country', 'name'].includes(header.column.id)
+                                            ? (
                                                 <Filter column={header.column} table={table} />
-                                            </div>
-                                        ) : null}
+                                            ) : ''}
                                     </th>
                                 )
                             })}
@@ -184,6 +185,13 @@ const TableUsers = ({ datos }: Props) => {
                     onClick={() => table.getCanPreviousPage() && table.previousPage()}
                     alt='left'
                 />
+                <span className="flex items-center gap-1">
+                    <div>Page</div>
+                    <strong>
+                        {table.getState().pagination.pageIndex + 1}of{' '}
+                        {table.getPageCount()}
+                    </strong>
+                </span>
                 <Image
                     src={iconLeft}
                     width={40}
@@ -221,7 +229,7 @@ function Filter({
     const columnFilterValue = column.getFilterValue()
 
     return typeof firstValue === 'number' ? (
-        <div className="w-full flex space-x-2">
+        <div className="flex space-x-2">
             <input
                 type="number"
                 value={(columnFilterValue as [number, number])?.[0] ?? ''}
@@ -253,7 +261,7 @@ function Filter({
             value={(columnFilterValue ?? '') as string}
             onChange={e => column.setFilterValue(e.target.value)}
             placeholder={`Search`}
-            className="bg-white w-[60%] text-sm text-black font-normal text-center border shadow rounded"
+            className="w-16 bg-white text-sm text-black font-normal text-center border shadow rounded"
         />
     );
 };
